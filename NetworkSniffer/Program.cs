@@ -47,7 +47,7 @@ namespace NetworkSniffer
             var ethPacket = packet.Extract<EthernetPacket>();
             if (ethPacket != null)
             {
-                Console.WriteLine($"Ethernet: {ethPacket.SourceHardwareAddress} -> {ethPacket.DestinationHardwareAddress}");
+                Console.WriteLine($"Ethernet: {ethPacket.SourceHardwareAddress} -> {ethPacket.DestinationHardwareAddress} | Type: {ethPacket.Type}");
 
                 // Extract ARP and IP packets
                 var arpPacket = packet.Extract<ArpPacket>();
@@ -59,7 +59,25 @@ namespace NetworkSniffer
                 var ipPacket = packet.Extract<IPPacket>();
                 if (ipPacket != null)
                 {
-                    Console.WriteLine($"IP: {ipPacket.SourceAddress} -> {ipPacket.DestinationAddress}");
+                    Console.WriteLine($"IP: {ipPacket.SourceAddress} -> {ipPacket.DestinationAddress} | Protocol: {ipPacket.Protocol}");
+
+                    // Extract TCP and UDP packets
+                    if (ipPacket.Protocol == ProtocolType.Tcp)
+                    {
+                        var tcpPacket = packet.Extract<TcpPacket>();
+                        if (tcpPacket != null)
+                        {
+                            Console.WriteLine($"TCP: {tcpPacket.SourcePort} -> {tcpPacket.DestinationPort} | Flags: {tcpPacket.Flags}");
+                        }
+                    }
+                    else if (ipPacket.Protocol == ProtocolType.Udp)
+                    {
+                        var udpPacket = packet.Extract<UdpPacket>();
+                        if (udpPacket != null)
+                        {
+                            Console.WriteLine($"UDP: {udpPacket.SourcePort} -> {udpPacket.DestinationPort} | Length: {udpPacket.Length}");
+                        }
+                    }
                 }
             }
         }
