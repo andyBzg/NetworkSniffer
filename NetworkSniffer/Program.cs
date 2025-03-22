@@ -42,11 +42,25 @@ namespace NetworkSniffer
 
         private static void PacketHandler(object sender, PacketCapture e)
         {
+            // Parse the packet
             var packet = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
             var ethPacket = packet.Extract<EthernetPacket>();
             if (ethPacket != null)
             {
                 Console.WriteLine($"Ethernet: {ethPacket.SourceHardwareAddress} -> {ethPacket.DestinationHardwareAddress}");
+
+                // Extract ARP and IP packets
+                var arpPacket = packet.Extract<ArpPacket>();
+                if (arpPacket != null)
+                {
+                    Console.WriteLine($"ARP: {arpPacket.SenderHardwareAddress} -> {arpPacket.TargetHardwareAddress}");
+                }
+
+                var ipPacket = packet.Extract<IPPacket>();
+                if (ipPacket != null)
+                {
+                    Console.WriteLine($"IP: {ipPacket.SourceAddress} -> {ipPacket.DestinationAddress}");
+                }
             }
         }
     }
