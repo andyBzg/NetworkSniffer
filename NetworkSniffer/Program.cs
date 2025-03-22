@@ -63,6 +63,18 @@ namespace NetworkSniffer
                 {
                     Console.WriteLine($"IP: {ipPacket.SourceAddress} -> {ipPacket.DestinationAddress} | Protocol: {ipPacket.Protocol}");
 
+                    // Extract ICMP packets
+                    if (ipPacket.Protocol == ProtocolType.Icmp)
+                    {
+                        var icmpPacket = packet.Extract<IcmpV4Packet>();
+                        if (icmpPacket != null)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.WriteLine($"ICMP: Type {icmpPacket.TypeCode} | Checksum {icmpPacket.Checksum}");
+                            Console.ResetColor();
+                        }
+                    }
+
                     // Extract TCP and UDP packets
                     if (ipPacket.Protocol == ProtocolType.Tcp)
                     {
