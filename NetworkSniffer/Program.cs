@@ -53,7 +53,9 @@ namespace NetworkSniffer
                 var arpPacket = packet.Extract<ArpPacket>();
                 if (arpPacket != null)
                 {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"ARP: {arpPacket.SenderHardwareAddress} -> {arpPacket.TargetHardwareAddress}");
+                    Console.ResetColor();
                 }
 
                 var ipPacket = packet.Extract<IPPacket>();
@@ -67,7 +69,9 @@ namespace NetworkSniffer
                         var tcpPacket = packet.Extract<TcpPacket>();
                         if (tcpPacket != null)
                         {
+                            Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine($"TCP: {tcpPacket.SourcePort} -> {tcpPacket.DestinationPort} | Flags: {tcpPacket.Flags}");
+                            Console.ResetColor();
                         }
                     }
                     else if (ipPacket.Protocol == ProtocolType.Udp)
@@ -75,7 +79,9 @@ namespace NetworkSniffer
                         var udpPacket = packet.Extract<UdpPacket>();
                         if (udpPacket != null)
                         {
+                            Console.ForegroundColor = ConsoleColor.Cyan;
                             Console.WriteLine($"UDP: {udpPacket.SourcePort} -> {udpPacket.DestinationPort} | Length: {udpPacket.Length}");
+                            Console.ResetColor();
                         }
                     }
                 }
