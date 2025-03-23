@@ -1,5 +1,8 @@
-﻿using PacketDotNet;
-using SharpPcap;
+﻿using NetworkSniffer.Interfaces;
+using NetworkSniffer.Loggers;
+using NetworkSniffer.Services;
+using NetworkSniffer.Services.Handlers;
+using NetworkSniffer.Utils;
 
 namespace NetworkSniffer
 {
@@ -8,96 +11,21 @@ namespace NetworkSniffer
         static void Main(string[] args)
         {
             // Display all network devices
-            Console.WriteLine("Network devices found:");
-            var devices = CaptureDeviceList.Instance;
-            if (devices.Count < 1)
+            var device = DeviceSelector.SelectDevice();
+            if (device == null) return;
+
+            ILogger logger = new ConsoleLogger();
+
+            // Create a list of packet handlers
+            var handlers = new List<IPacketHandler>
             {
-                Console.WriteLine("No network devices found.");
-                return;
-            }
+                new EthernetPacketHandler(logger),
+                new ArpPacketHandler(logger)
+            };
 
-            int i = 0;
-            foreach (var dev in devices)
-            {
-                Console.WriteLine($"[{i}] {dev.Description}");
-                i++;
-            }
-
-            Console.Write("Select a device to capture packets: ");
-            int index = int.Parse(Console.ReadLine() ?? "0");
-            var device = devices[index];
-
-            // Open the device for capturing
-            device.OnPacketArrival += new PacketArrivalEventHandler(PacketHandler);
-            device.Open(DeviceModes.Promiscuous);
-            Console.WriteLine($"Capturing packets on {device.Description}...");
-            device.StartCapture();
-
-            Console.WriteLine("Press any key to stop capturing...");
-            Console.ReadKey();
-
-            device.StopCapture();
-            device.Close();
-        }
-
-        private static void PacketHandler(object sender, PacketCapture e)
-        {
-            // Parse the packet
-            var packet = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
-            var ethPacket = packet.Extract<EthernetPacket>();
-            if (ethPacket != null)
-            {
-                Console.WriteLine($"Ethernet: {ethPacket.SourceHardwareAddress} -> {ethPacket.DestinationHardwareAddress} | Type: {ethPacket.Type}");
-
-                // Extract ARP and IP packets
-                var arpPacket = packet.Extract<ArpPacket>();
-                if (arpPacket != null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"ARP: {arpPacket.SenderHardwareAddress} -> {arpPacket.TargetHardwareAddress}");
-                    Console.ResetColor();
-                }
-
-                var ipPacket = packet.Extract<IPPacket>();
-                if (ipPacket != null)
-                {
-                    Console.WriteLine($"IP: {ipPacket.SourceAddress} -> {ipPacket.DestinationAddress} | Protocol: {ipPacket.Protocol}");
-
-                    // Extract ICMP packets
-                    if (ipPacket.Protocol == ProtocolType.Icmp)
-                    {
-                        var icmpPacket = packet.Extract<IcmpV4Packet>();
-                        if (icmpPacket != null)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Magenta;
-                            Console.WriteLine($"ICMP: Type {icmpPacket.TypeCode} | Checksum {icmpPacket.Checksum}");
-                            Console.ResetColor();
-                        }
-                    }
-
-                    // Extract TCP and UDP packets
-                    if (ipPacket.Protocol == ProtocolType.Tcp)
-                    {
-                        var tcpPacket = packet.Extract<TcpPacket>();
-                        if (tcpPacket != null)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"TCP: {tcpPacket.SourcePort} -> {tcpPacket.DestinationPort} | Flags: {tcpPacket.Flags}");
-                            Console.ResetColor();
-                        }
-                    }
-                    else if (ipPacket.Protocol == ProtocolType.Udp)
-                    {
-                        var udpPacket = packet.Extract<UdpPacket>();
-                        if (udpPacket != null)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Cyan;
-                            Console.WriteLine($"UDP: {udpPacket.SourcePort} -> {udpPacket.DestinationPort} | Length: {udpPacket.Length}");
-                            Console.ResetColor();
-                        }
-                    }
-                }
-            }
+            // Create a packet sniffer
+            IPacketSniffer sniffer = new PacketSniffer(device, logger, handlers);
+            sniffer.StartCapture();
         }
     }
 }
