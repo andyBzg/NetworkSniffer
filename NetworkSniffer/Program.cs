@@ -1,7 +1,7 @@
-﻿using NetworkSniffer.Interfaces;
-using NetworkSniffer.Loggers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NetworkSniffer.Config;
+using NetworkSniffer.Interfaces;
 using NetworkSniffer.Services;
-using NetworkSniffer.Services.Handlers;
 using NetworkSniffer.Utils;
 
 namespace NetworkSniffer
@@ -10,21 +10,19 @@ namespace NetworkSniffer
     {
         static void Main(string[] args)
         {
+            // Create a service provider
+            var serviceProvider = ServiceConfigurator.ConfigureServices();
+
             // Display all network devices
             var device = DeviceSelector.SelectDevice();
             if (device == null) return;
 
-            ILogger logger = new ConsoleLogger();
-
-            // Create a list of packet handlers
-            var handlers = new List<IPacketHandler>
-            {
-                new EthernetPacketHandler(logger),
-                new ArpPacketHandler(logger)
-            };
+            // Get the required services
+            var logger = serviceProvider.GetRequiredService<ILogger>();
+            var packetProcessor = serviceProvider.GetRequiredService<IPacketProcessor>();
 
             // Create a packet sniffer
-            IPacketSniffer sniffer = new PacketSniffer(device, logger, handlers);
+            var sniffer = new PacketSniffer(device, logger, packetProcessor);
             sniffer.StartCapture();
         }
     }

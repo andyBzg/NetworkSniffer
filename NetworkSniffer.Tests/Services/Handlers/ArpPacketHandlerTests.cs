@@ -36,7 +36,7 @@ namespace NetworkSniffer.Tests.Services.Handlers
 
             // Assert
             mockLogger.Verify(
-                logger => logger.Log($"ARP: {senderMac} -> {targetMac}", ConsoleColor.Yellow),
+                logger => logger.Log($"[Network Layer] ARP: {senderMac} -> {targetMac}", ConsoleColor.Yellow),
                 Times.Once
                 );
         }

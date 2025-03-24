@@ -12,12 +12,17 @@ namespace NetworkSniffer.Services.Handlers
             _logger = logger;
         }
 
+        public bool CanHandlePacket(Packet packet)
+        {
+            return packet.Extract<ArpPacket>() != null;
+        }
+
         public void HandlePacket(Packet packet)
         {
             var arpPacket = packet.Extract<ArpPacket>();
             if (arpPacket != null)
             {
-                _logger.Log($"ARP: {arpPacket.SenderHardwareAddress} -> {arpPacket.TargetHardwareAddress}", ConsoleColor.Yellow);
+                _logger.Log($"[Network Layer] ARP: {arpPacket.SenderHardwareAddress} -> {arpPacket.TargetHardwareAddress}", ConsoleColor.Yellow);
             }
         }
     }
