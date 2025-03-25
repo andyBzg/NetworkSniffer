@@ -23,7 +23,7 @@ namespace NetworkSniffer.Services.Handlers
             if (udpPacket != null)
             {
                 _logger.Log(
-                    "[T] [UDP]".PadRight(15) +
+                    $"[{DateTime.Now:HH:mm:ss.fff}] [T] [UDP]".PadRight(30) +
                     $"{udpPacket.SourcePort} -> {udpPacket.DestinationPort}" +
                     $" | Length: {udpPacket.Length} bytes" +
                     $" | Checksum: {udpPacket.Checksum}",

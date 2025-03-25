@@ -23,7 +23,7 @@ namespace NetworkSniffer.Services.Handlers
             if (ethPacket != null)
             {
                 _logger.Log(
-                    "[D] [Ethernet]".PadRight(15) +
+                    $"[{DateTime.Now:HH:mm:ss.fff}] [D] [Ethernet]".PadRight(30) +
                     $"{ethPacket.SourceHardwareAddress} -> {ethPacket.DestinationHardwareAddress}".PadRight(35) +
                     $" | EtherType: {ethPacket.Type}"
                     );

@@ -20,6 +20,7 @@ namespace NetworkSniffer.Services.Handlers
 
         public void HandlePacket(Packet packet)
         {
+            DateTime.Now.ToString("HH:mm:ss");
             var tcpPacket = packet.Extract<TcpPacket>();
             if (tcpPacket != null)
             {
@@ -27,7 +28,7 @@ namespace NetworkSniffer.Services.Handlers
                 if (httpPayload.Contains("HTTP"))
                 {
                     _logger.Log(
-                        "[A] [HTTP]".PadRight(15) +
+                        $"[{DateTime.Now:HH:mm:ss.fff}] [A] [HTTP]".PadRight(30) +
                         $"Payload: {httpPayload}",
                         ConsoleColor.Yellow
                         );

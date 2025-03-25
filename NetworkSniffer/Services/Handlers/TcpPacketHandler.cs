@@ -23,7 +23,7 @@ namespace NetworkSniffer.Services.Handlers
             if (tcpPacket != null)
             {
                 _logger.Log(
-                    "[T] [TCP]".PadRight(15) +
+                    $"[{DateTime.Now:HH:mm:ss.fff}] [T] [TCP]".PadRight(30) +
                     $"{tcpPacket.SourcePort} -> {tcpPacket.DestinationPort}" +
                     $" | Seq: {tcpPacket.SequenceNumber}" +
                     $" | Ack: {tcpPacket.AcknowledgmentNumber}" +

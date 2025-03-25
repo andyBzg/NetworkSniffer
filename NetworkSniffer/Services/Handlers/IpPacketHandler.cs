@@ -23,7 +23,7 @@ namespace NetworkSniffer.Services.Handlers
             if (ipPacket != null)
             {
                 _logger.Log(
-                    "[N] [IP]".PadRight(15) +
+                    $"[{DateTime.Now:HH:mm:ss.fff}] [N] [IP]".PadRight(30) +
                     $"{ipPacket.SourceAddress} -> {ipPacket.DestinationAddress}".PadRight(35) +
                     $" | Protocol: {ipPacket.Protocol}" +
                     $" | TTL: {ipPacket.TimeToLive}" +

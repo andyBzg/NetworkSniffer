@@ -23,9 +23,9 @@ namespace NetworkSniffer.Services.Handlers
             if (icmpPacket != null)
             {
                 _logger.Log(
-                    "[N] [ICMP]".PadRight(15) +
-                    $"Type {icmpPacket.TypeCode}" +
-                    $" | Checksum {icmpPacket.Checksum}" +
+                    $"[{DateTime.Now:HH:mm:ss.fff}] [N] [ICMP]".PadRight(30) +
+                    $"Type: {icmpPacket.TypeCode}" +
+                    $" | Checksum: {icmpPacket.Checksum}" +
                     $" | Identifier: {icmpPacket.Id}" +
                     $" | Seq No: {icmpPacket.Sequence}",
                     ConsoleColor.Magenta

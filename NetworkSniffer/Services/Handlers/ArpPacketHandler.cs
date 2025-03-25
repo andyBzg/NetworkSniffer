@@ -23,7 +23,7 @@ namespace NetworkSniffer.Services.Handlers
             if (arpPacket != null)
             {
                 _logger.Log(
-                    "[D] [ARP]".PadRight(15) +
+                    $"[{DateTime.Now:HH:mm:ss.fff}] [D] [ARP]".PadRight(30) +
                     $"{arpPacket.Operation}: " +
                     $"{arpPacket.SenderProtocolAddress} ({arpPacket.SenderHardwareAddress}) -> " +
                     $"{arpPacket.TargetProtocolAddress} ({arpPacket.SenderHardwareAddress})"

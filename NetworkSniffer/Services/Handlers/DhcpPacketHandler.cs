@@ -23,10 +23,10 @@ namespace NetworkSniffer.Services.Handlers
             if (dhcpPacket != null)
             {
                 _logger.Log(
-                    "[A] [DHCP]".PadRight(15) +
+                    $"[{DateTime.Now:HH:mm:ss.fff}] [A] [DHCP]".PadRight(30) +
                     $"Client: {dhcpPacket.ClientHardwareAddress}" +
                     $" | Requested IP: {dhcpPacket.YourAddress}" +
-                    $" | Type: {dhcpPacket.MessageType}" +
+                    $" | Type: {dhcpPacket.MessageType}",
                     ConsoleColor.Yellow
                     );
             }
