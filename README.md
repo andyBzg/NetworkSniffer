@@ -1,4 +1,4 @@
-# Network SnifferNetwork Sniffer
+# Network Sniffer
 
 ## Overview
 
@@ -15,6 +15,7 @@ This is a simple network sniffer written in C# using the **PacketDotNet** and **
 
 - .NET SDK (6.0 or later recommended)
 - **PacketDotNet** and **SharpPcap** libraries
+- [Npcap](https://npcap.com/) (Required for SharpPcap. Make sure to install it with WinPcap API compatibility)
 - Administrator privileges to access network interfaces
 
 ## Installation
@@ -25,6 +26,7 @@ This is a simple network sniffer written in C# using the **PacketDotNet** and **
 dotnet add package PacketDotNet
 dotnet add package SharpPcap
 ```
+3. Install Npcap from the official website.
 
 ## Usage
 
@@ -43,9 +45,9 @@ dotnet run
 [1] Wi-Fi Adapter
 Select a device to capture packets: 1
 Capturing packets on Wi-Fi Adapter...
-Ethernet: 00:1A:2B:3C:4D:5E -> 11:22:33:44:55:66 | Type: IPv4
-IP: 192.168.1.2 -> 192.168.1.1 | Protocol: TCP
-TCP: 54321 -> 80 | Flags: SYN
+[D] [Ethernet] 00:1A:2B:3C:4D:5E -> 11:22:33:44:55:66 | Type: IPv4
+[N] [IP]	   192.168.1.2 -> 192.168.1.1 | Protocol: TCP
+[T] [TCP]	   54321 -> 80 | Flags: SYN
 ```
 
 ## Notes

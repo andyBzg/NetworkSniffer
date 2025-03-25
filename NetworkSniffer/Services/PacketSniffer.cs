@@ -8,13 +8,13 @@ namespace NetworkSniffer.Services
     {
         private readonly ICaptureDevice _device;
         private readonly ILogger _logger;
-        private readonly List<IPacketHandler> _handlers;
+        private readonly IPacketProcessor _packetProcessor;
 
-        public PacketSniffer(ICaptureDevice device, ILogger logger, List<IPacketHandler> handlers)
+        public PacketSniffer(ICaptureDevice device, ILogger logger, IPacketProcessor packetProcessor)
         {
             _device = device;
             _logger = logger;
-            _handlers = handlers;
+            _packetProcessor = packetProcessor;
         }
 
         public void StartCapture()
@@ -39,10 +39,15 @@ namespace NetworkSniffer.Services
 
         private void OnPacketArrival(object sender, PacketCapture e)
         {
-            var packet = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
-            foreach (var handler in _handlers)
+            try
             {
-                handler.HandlePacket(packet);
+                var packet = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
+                _packetProcessor.ProcessPacket(packet);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"Error processing packet: {ex.Message}", ConsoleColor.Red);
             }
         }
     }
