@@ -22,7 +22,14 @@ namespace NetworkSniffer.Services.Handlers
             var icmpPacket = packet.Extract<IcmpV4Packet>();
             if (icmpPacket != null)
             {
-                _logger.Log($"[Network Layer] ICMP: Type {icmpPacket.TypeCode} | Checksum {icmpPacket.Checksum}", ConsoleColor.Magenta);
+                _logger.Log(
+                    "[N] [ICMP]".PadRight(15) +
+                    $"Type {icmpPacket.TypeCode}" +
+                    $" | Checksum {icmpPacket.Checksum}" +
+                    $" | Identifier: {icmpPacket.Id}" +
+                    $" | Seq No: {icmpPacket.Sequence}",
+                    ConsoleColor.Magenta
+                    );
             }
         }
     }

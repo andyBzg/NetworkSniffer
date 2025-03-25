@@ -22,7 +22,13 @@ namespace NetworkSniffer.Services.Handlers
             var udpPacket = packet.Extract<UdpPacket>();
             if (udpPacket != null)
             {
-                _logger.Log($"[Transport Layer] UDP: {udpPacket.SourcePort} -> {udpPacket.DestinationPort}", ConsoleColor.Cyan);
+                _logger.Log(
+                    "[T] [UDP]".PadRight(15) +
+                    $"{udpPacket.SourcePort} -> {udpPacket.DestinationPort}" +
+                    $" | Length: {udpPacket.Length} bytes" +
+                    $" | Checksum: {udpPacket.Checksum}",
+                    ConsoleColor.Green
+                    );
             }
         }
     }

@@ -20,6 +20,8 @@ namespace NetworkSniffer.Config
             services.AddSingleton<IPacketHandler, TcpPacketHandler>();
             services.AddSingleton<IPacketHandler, UdpPacketHandler>();
             services.AddSingleton<IPacketHandler, IcmpPacketHandler>();
+            services.AddSingleton<IPacketHandler, DhcpPacketHandler>();
+            services.AddSingleton<IPacketHandler, HttpPacketHandler>();
 
             services.AddSingleton<IPacketProcessor, PacketProcessor>();
 

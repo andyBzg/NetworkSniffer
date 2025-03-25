@@ -22,7 +22,12 @@ namespace NetworkSniffer.Services.Handlers
             var arpPacket = packet.Extract<ArpPacket>();
             if (arpPacket != null)
             {
-                _logger.Log($"[Network Layer] ARP: {arpPacket.SenderHardwareAddress} -> {arpPacket.TargetHardwareAddress}", ConsoleColor.Yellow);
+                _logger.Log(
+                    "[D] [ARP]".PadRight(15) +
+                    $"{arpPacket.Operation}: " +
+                    $"{arpPacket.SenderProtocolAddress} ({arpPacket.SenderHardwareAddress}) -> " +
+                    $"{arpPacket.TargetProtocolAddress} ({arpPacket.SenderHardwareAddress})"
+                    );
             }
         }
     }

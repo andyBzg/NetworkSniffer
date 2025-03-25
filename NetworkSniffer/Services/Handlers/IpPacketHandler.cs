@@ -22,7 +22,14 @@ namespace NetworkSniffer.Services.Handlers
             var ipPacket = packet.Extract<IPPacket>();
             if (ipPacket != null)
             {
-                _logger.Log($"[Network Layer] IP: {ipPacket.SourceAddress} -> {ipPacket.DestinationAddress} | Protocol: {ipPacket.Protocol}");
+                _logger.Log(
+                    "[N] [IP]".PadRight(15) +
+                    $"{ipPacket.SourceAddress} -> {ipPacket.DestinationAddress}".PadRight(35) +
+                    $" | Protocol: {ipPacket.Protocol}" +
+                    $" | TTL: {ipPacket.TimeToLive}" +
+                    $" | Length: {ipPacket.TotalPacketLength}",
+                    ConsoleColor.Blue
+                    );
             }
         }
     }

@@ -22,7 +22,11 @@ namespace NetworkSniffer.Services.Handlers
             var ethPacket = packet.Extract<EthernetPacket>();
             if (ethPacket != null)
             {
-                _logger.Log($"[Link Layer] Ethernet: {ethPacket.SourceHardwareAddress} -> {ethPacket.DestinationHardwareAddress} | Type: {ethPacket.Type}");
+                _logger.Log(
+                    "[D] [Ethernet]".PadRight(15) +
+                    $"{ethPacket.SourceHardwareAddress} -> {ethPacket.DestinationHardwareAddress}".PadRight(35) +
+                    $" | EtherType: {ethPacket.Type}"
+                    );
             }
         }
     }

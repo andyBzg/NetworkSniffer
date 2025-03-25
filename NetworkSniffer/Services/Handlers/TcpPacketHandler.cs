@@ -22,7 +22,16 @@ namespace NetworkSniffer.Services.Handlers
             var tcpPacket = packet.Extract<TcpPacket>();
             if (tcpPacket != null)
             {
-                _logger.Log($"[Transport Layer] TCP: {tcpPacket.SourcePort} -> {tcpPacket.DestinationPort} | Flags: {tcpPacket.Flags}", ConsoleColor.Green);
+                _logger.Log(
+                    "[T] [TCP]".PadRight(15) +
+                    $"{tcpPacket.SourcePort} -> {tcpPacket.DestinationPort}" +
+                    $" | Seq: {tcpPacket.SequenceNumber}" +
+                    $" | Ack: {tcpPacket.AcknowledgmentNumber}" +
+                    $" | Flags: {tcpPacket.Flags}" +
+                    $" | Window: {tcpPacket.WindowSize}" +
+                    $" | Checksum: {tcpPacket.Checksum}",
+                    ConsoleColor.Green
+                    );
             }
         }
     }
