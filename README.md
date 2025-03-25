@@ -46,8 +46,8 @@ dotnet run
 Select a device to capture packets: 1
 Capturing packets on Wi-Fi Adapter...
 [D] [Ethernet] 00:1A:2B:3C:4D:5E -> 11:22:33:44:55:66 | Type: IPv4
-[N] [IP]	   192.168.1.2 -> 192.168.1.1 | Protocol: TCP
-[T] [TCP]	   54321 -> 80 | Flags: SYN
+[N] [IP]       192.168.1.2 -> 192.168.1.1 | Protocol: TCP
+[T] [TCP]      54321 -> 80 | Flags: SYN
 ```
 
 ## Notes
