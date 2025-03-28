@@ -20,9 +20,8 @@ namespace NetworkSniffer.Services.Handlers
 
         public void HandlePacket(Packet packet)
         {
-            DateTime.Now.ToString("HH:mm:ss");
             var tcpPacket = packet.Extract<TcpPacket>();
-            if (tcpPacket != null)
+            if (tcpPacket != null && tcpPacket.HasPayloadData)
             {
                 var httpPayload = Encoding.UTF8.GetString(tcpPacket.PayloadData);
                 if (httpPayload.Contains("HTTP"))
