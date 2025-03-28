@@ -2,12 +2,8 @@
 using NetworkSniffer.Interfaces;
 using NetworkSniffer.Services.Handlers;
 using PacketDotNet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace NetworkSniffer.Tests.Services.Handlers
 {
@@ -32,7 +28,7 @@ namespace NetworkSniffer.Tests.Services.Handlers
             // Arrange
             var tcpPacket = new TcpPacket(1234, 80);
             tcpPacket.PayloadData = Encoding.UTF8.GetBytes("GET / HTTP/1.1");
-            
+
             var ethernetPacket = new EthernetPacket(_senderMac, _targetMac, EthernetType.IPv4);
             ethernetPacket.PayloadPacket = tcpPacket;
 
@@ -64,7 +60,7 @@ namespace NetworkSniffer.Tests.Services.Handlers
             // Arrange
             var tcpPacket = new TcpPacket(1234, 80);
             tcpPacket.PayloadData = Encoding.UTF8.GetBytes("GET / HTTP/1.1");
-            
+
             var ethernetPacket = new EthernetPacket(_senderMac, _targetMac, EthernetType.IPv4);
             ethernetPacket.PayloadPacket = tcpPacket;
 
