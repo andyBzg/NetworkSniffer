@@ -3,6 +3,7 @@ using PacketDotNet;
 using NetworkSniffer.Interfaces;
 using NetworkSniffer.Services.Handlers;
 using System.Net.NetworkInformation;
+using System.Net;
 
 namespace NetworkSniffer.Tests.Services.Handlers
 {
@@ -12,8 +13,8 @@ namespace NetworkSniffer.Tests.Services.Handlers
         private readonly ArpPacketHandler _handler;
         private readonly PhysicalAddress _senderMac;
         private readonly PhysicalAddress _targetMac;
-        private readonly System.Net.IPAddress _senderIp;
-        private readonly System.Net.IPAddress _targetIp;
+        private readonly IPAddress _senderIp;
+        private readonly IPAddress _targetIp;
 
         public ArpPacketHandlerTests()
         {
@@ -21,8 +22,8 @@ namespace NetworkSniffer.Tests.Services.Handlers
             _handler = new ArpPacketHandler(_mockLogger.Object);
             _senderMac = new PhysicalAddress(new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 });
             _targetMac = new PhysicalAddress(new byte[] { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF });
-            _senderIp = new System.Net.IPAddress(new byte[] { 192, 168, 0, 1 });
-            _targetIp = new System.Net.IPAddress(new byte[] { 192, 168, 0, 2 });
+            _senderIp = new IPAddress(new byte[] { 192, 168, 0, 1 });
+            _targetIp = new IPAddress(new byte[] { 192, 168, 0, 2 });
         }
 
         [Fact]
@@ -59,7 +60,6 @@ namespace NetworkSniffer.Tests.Services.Handlers
         {
             // Arrange
             var arpPacket = new ArpPacket(ArpOperation.Request, _targetMac, _senderIp, _senderMac, _targetIp);
-
             var ethernetPacket = new EthernetPacket(_senderMac, _targetMac, EthernetType.Arp);
             ethernetPacket.PayloadPacket = arpPacket;
 
@@ -74,13 +74,31 @@ namespace NetworkSniffer.Tests.Services.Handlers
         }
 
         [Fact]
-        public void HandlePacket_WithNullArpPacket_DoesNotLog()
+        public void HandlePacket_NonArpPacket_DoesNotLog()
         {
             // Arrange
             var tcpPacket = new TcpPacket(1234, 80);
+            var ethernetPacket = new EthernetPacket(_senderMac, _targetMac, EthernetType.Arp);
+            ethernetPacket.PayloadPacket = tcpPacket;
 
             // Act
-            _handler.HandlePacket(tcpPacket);
+            _handler.HandlePacket(ethernetPacket);
+
+            // Assert
+            _mockLogger.Verify(
+                logger => logger.Log(It.IsAny<string>(), It.IsAny<ConsoleColor>()),
+                Times.Never
+                );
+        }
+
+        [Fact]
+        public void HandlePacket_WithNullArpPacket_DoesNotLog()
+        {
+            // Arrange
+            var ethernetPacket = new EthernetPacket(_senderMac, _targetMac, EthernetType.Arp);
+
+            // Act
+            _handler.HandlePacket(ethernetPacket);
 
             // Assert
             _mockLogger.Verify(
