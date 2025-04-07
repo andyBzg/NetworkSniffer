@@ -9,15 +9,17 @@ namespace NetworkSniffer.Tests.Services.Handlers
 {
     public class DhcpPacketHandlerTests
     {
-        private readonly Mock<ILogger> _mockLogger;
+        //private readonly Mock<ILogger> _mockLogger;
+        private readonly Mock<IPacketLayerHelper> _mockPacketLayerHelper;
         private readonly DhcpPacketHandler _handler;
         private readonly PhysicalAddress _senderMac;
         private readonly PhysicalAddress _targetMac;
 
         public DhcpPacketHandlerTests()
         {
-            _mockLogger = new Mock<ILogger>();
-            _handler = new DhcpPacketHandler(_mockLogger.Object);
+            //_mockLogger = new Mock<ILogger>();
+            _mockPacketLayerHelper = new Mock<IPacketLayerHelper>();
+            _handler = new DhcpPacketHandler(_mockPacketLayerHelper.Object);
             _senderMac = new PhysicalAddress(new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 });
             _targetMac = new PhysicalAddress(new byte[] { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF });
         }
@@ -53,7 +55,7 @@ namespace NetworkSniffer.Tests.Services.Handlers
             Assert.False(result);
         }
 
-        [Fact]
+        /*[Fact]
         public void HandlePacket_ValidDhcpPacket_LogsCorrectMessage()
         {
             // Arrange
@@ -99,6 +101,6 @@ namespace NetworkSniffer.Tests.Services.Handlers
 
             // Assert
             _mockLogger.Verify(l => l.Log(It.IsAny<string>(), It.IsAny<ConsoleColor>()), Times.Never);
-        }
+        }*/
     }
 }

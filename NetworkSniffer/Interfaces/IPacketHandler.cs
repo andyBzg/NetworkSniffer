@@ -1,10 +1,11 @@
-﻿using PacketDotNet;
+﻿using NetworkSniffer.Utils;
+using PacketDotNet;
 
 namespace NetworkSniffer.Interfaces
 {
     internal interface IPacketHandler
     {
         bool CanHandlePacket(Packet packet);
-        void HandlePacket(Packet packet);
+        void HandlePacket(Packet packet, PacketLogBuilder logBuilder);
     }
 }

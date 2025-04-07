@@ -1,6 +1,7 @@
 ﻿using Moq;
 using NetworkSniffer.Interfaces;
 using NetworkSniffer.Services;
+using NetworkSniffer.Utils;
 using PacketDotNet;
 using System.Net.NetworkInformation;
 
@@ -38,7 +39,7 @@ namespace NetworkSniffer.Tests.Services
             _packetProcessor.ProcessPacket(packet);
 
             // Assert
-            _packetHandlerMock.Verify(h => h.HandlePacket(packet), Times.Once);
+            _packetHandlerMock.Verify(h => h.HandlePacket(packet, It.IsAny<PacketLogBuilder>()), Times.Once);
         }
 
         [Fact]
@@ -53,8 +54,8 @@ namespace NetworkSniffer.Tests.Services
             _packetProcessor.ProcessPacket(packet);
 
             // Assert
-            _packetHandlerMock.Verify(h => h.HandlePacket(packet), Times.Once);
-            _secondPacketHandlerMock.Verify(h2 => h2.HandlePacket(packet), Times.Once);
+            _packetHandlerMock.Verify(h => h.HandlePacket(packet, It.IsAny<PacketLogBuilder>()), Times.Once);
+            _secondPacketHandlerMock.Verify(h2 => h2.HandlePacket(packet, It.IsAny<PacketLogBuilder>()), Times.Once);
         }
 
         [Fact]
@@ -69,7 +70,7 @@ namespace NetworkSniffer.Tests.Services
 
             // Assert
             _mockLogger.Verify(l => l.Log(It.IsAny<string>(), It.IsAny<ConsoleColor>()), Times.Once);
-            _packetHandlerMock.Verify(h => h.HandlePacket(packet), Times.Never);
+            _packetHandlerMock.Verify(h => h.HandlePacket(packet, It.IsAny<PacketLogBuilder>()), Times.Never);
         }
 
         [Fact]
@@ -84,9 +85,26 @@ namespace NetworkSniffer.Tests.Services
             _packetProcessor.ProcessPacket(packet);
 
             // Assert
-            _packetHandlerMock.Verify(h => h.HandlePacket(packet), Times.Never);
-            _secondPacketHandlerMock.Verify(h2 => h2.HandlePacket(packet), Times.Once);
-            _mockLogger.Verify(l => l.Log(It.IsAny<string>(), It.IsAny<ConsoleColor>()), Times.Never);
+            _packetHandlerMock.Verify(h => h.HandlePacket(packet, It.IsAny<PacketLogBuilder>()), Times.Never);
+            _secondPacketHandlerMock.Verify(h2 => h2.HandlePacket(packet, It.IsAny<PacketLogBuilder>()), Times.Once);
+            _mockLogger.Verify(l => l.Log(It.IsAny<string>(), It.IsAny<ConsoleColor>()), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessPacket_NoHandlersCanHandle_ShouldLogUnhandledPacket()
+        {
+            // Arrange
+            var packet = new EthernetPacket(_senderMac, _targetMac, EthernetType.IPv4);
+            _packetHandlerMock.Setup(h => h.CanHandlePacket(packet)).Returns(false);
+            _secondPacketHandlerMock.Setup(h2 => h2.CanHandlePacket(packet)).Returns(false);
+
+            // Act
+            _packetProcessor.ProcessPacket(packet);
+
+            // Assert
+            _mockLogger.Verify(l => l.Log(It.IsAny<string>(), It.IsAny<ConsoleColor>()), Times.Once);
+            _packetHandlerMock.Verify(h => h.HandlePacket(packet, It.IsAny<PacketLogBuilder>()), Times.Never);
+            _secondPacketHandlerMock.Verify(h2 => h2.HandlePacket(packet, It.IsAny<PacketLogBuilder>()), Times.Never);
         }
     }
 }

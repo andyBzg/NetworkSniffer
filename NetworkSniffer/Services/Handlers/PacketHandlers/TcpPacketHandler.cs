@@ -1,15 +1,16 @@
 ﻿using NetworkSniffer.Interfaces;
+using NetworkSniffer.Utils;
 using PacketDotNet;
 
-namespace NetworkSniffer.Services.Handlers
+namespace NetworkSniffer.Services.Handlers.PacketHandlers
 {
     internal class TcpPacketHandler : IPacketHandler
     {
-        private readonly ILogger _logger;
+        private readonly IPacketLayerHelper _packetLayerHelper;
 
-        public TcpPacketHandler(ILogger logger)
+        public TcpPacketHandler(IPacketLayerHelper packetLayerHelper)
         {
-            _logger = logger;
+            _packetLayerHelper = packetLayerHelper;
         }
 
         public bool CanHandlePacket(Packet packet)
@@ -17,21 +18,20 @@ namespace NetworkSniffer.Services.Handlers
             return packet.Extract<TcpPacket>() != null;
         }
 
-        public void HandlePacket(Packet packet)
+        public void HandlePacket(Packet packet, PacketLogBuilder logBuilder)
         {
             var tcpPacket = packet.Extract<TcpPacket>();
             if (tcpPacket != null)
             {
-                _logger.Log(
-                    $"[{DateTime.Now:HH:mm:ss.fff}] [T] [TCP]".PadRight(30) +
+                var layerLevel = _packetLayerHelper.GetLayerLevel(tcpPacket);
+                var layerName = _packetLayerHelper.GetLayerName(tcpPacket);
+                logBuilder.AddLayer(layerLevel, layerName,
                     $"{tcpPacket.SourcePort} -> {tcpPacket.DestinationPort}" +
                     $" | Seq: {tcpPacket.SequenceNumber}" +
                     $" | Ack: {tcpPacket.AcknowledgmentNumber}" +
                     $" | Flags: {tcpPacket.Flags}" +
                     $" | Window: {tcpPacket.WindowSize}" +
-                    $" | Checksum: {tcpPacket.Checksum}",
-                    ConsoleColor.Green
-                    );
+                    $" | Checksum: {tcpPacket.Checksum}");
             }
         }
     }

@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NetworkSniffer.Interfaces;
 using NetworkSniffer.Loggers;
-using NetworkSniffer.Services.Handlers;
 using NetworkSniffer.Services;
+using NetworkSniffer.Services.Handlers.PacketHandlers;
+using NetworkSniffer.Utils;
 
 namespace NetworkSniffer.Config
 {
@@ -13,6 +14,7 @@ namespace NetworkSniffer.Config
             var services = new ServiceCollection();
 
             services.AddSingleton<ILogger, ConsoleLogger>();
+            services.AddSingleton<IPacketLayerHelper, PacketLayerHelper>();
 
             services.AddSingleton<IPacketHandler, EthernetPacketHandler>();
             services.AddSingleton<IPacketHandler, ArpPacketHandler>();
@@ -20,8 +22,8 @@ namespace NetworkSniffer.Config
             services.AddSingleton<IPacketHandler, TcpPacketHandler>();
             services.AddSingleton<IPacketHandler, UdpPacketHandler>();
             services.AddSingleton<IPacketHandler, IcmpPacketHandler>();
-            services.AddSingleton<IPacketHandler, DhcpPacketHandler>();
-            services.AddSingleton<IPacketHandler, HttpPacketHandler>();
+            //services.AddSingleton<IPacketHandler, DhcpPacketHandler>();
+            //services.AddSingleton<IPacketHandler, HttpPacketHandler>();
 
             services.AddSingleton<IPacketProcessor, PacketProcessor>();
 
