@@ -1,4 +1,5 @@
 ﻿using Moq;
+using NetworkSniffer.Interfaces;
 using NetworkSniffer.Services.Handlers.PacketHandlers;
 using NetworkSniffer.Utils;
 using PacketDotNet;
@@ -10,6 +11,7 @@ namespace NetworkSniffer.Tests.Services.Handlers.PacketHandlers
     {
         //private readonly Mock<ILogger> _mockLogger;
         private readonly Mock<IPacketLayerHelper> _mockPacketLayerHelper;
+        private readonly Mock<IPayloadProcessor> _mockPayloadProcessor;
         private readonly UdpPacketHandler _handler;
         private readonly PhysicalAddress _senderMac;
         private readonly PhysicalAddress _targetMac;
@@ -18,7 +20,8 @@ namespace NetworkSniffer.Tests.Services.Handlers.PacketHandlers
         {
             //_mockLogger = new Mock<ILogger>();
             _mockPacketLayerHelper = new Mock<IPacketLayerHelper>();
-            _handler = new UdpPacketHandler(_mockPacketLayerHelper.Object);
+            _mockPayloadProcessor = new Mock<IPayloadProcessor>();
+            _handler = new UdpPacketHandler(_mockPacketLayerHelper.Object, _mockPayloadProcessor.Object);
             _senderMac = new PhysicalAddress(new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 });
             _targetMac = new PhysicalAddress(new byte[] { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF });
         }
@@ -92,6 +95,36 @@ namespace NetworkSniffer.Tests.Services.Handlers.PacketHandlers
             // Assert
             string logMessage = logBuilder.Build();
             Assert.Empty(logMessage);
+        }
+
+        [Fact]
+        public void HandlePacket_ValidUdpPacket_CallsPayloadProcessor()
+        {
+            // Arrange
+            var udpPacket = new UdpPacket(1234, 80);
+            var logBuilder = new PacketLogBuilder();
+            byte[] payloadData = { 0x01, 0x02, 0x03 };
+            udpPacket.PayloadData = payloadData;
+
+            // Act
+            _handler.HandlePacket(udpPacket, logBuilder);
+
+            // Assert
+            _mockPayloadProcessor.Verify(m => m.ProcessPayload(payloadData, logBuilder), Times.Once);
+        }
+
+        [Fact]
+        public void HandlePacket_ValidUdpPacket_NoPayload_DoesNotCallPayloadProcessor()
+        {
+            // Arrange
+            var udpPacket = new UdpPacket(1234, 80);
+            var logBuilder = new PacketLogBuilder();
+
+            // Act
+            _handler.HandlePacket(udpPacket, logBuilder);
+
+            // Assert
+            _mockPayloadProcessor.Verify(m => m.ProcessPayload(It.IsAny<byte[]>(), logBuilder), Times.Never);
         }
     }
 }

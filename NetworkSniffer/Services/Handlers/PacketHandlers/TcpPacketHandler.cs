@@ -7,10 +7,12 @@ namespace NetworkSniffer.Services.Handlers.PacketHandlers
     internal class TcpPacketHandler : IPacketHandler
     {
         private readonly IPacketLayerHelper _packetLayerHelper;
+        private readonly IPayloadProcessor _payloadProcessor;
 
-        public TcpPacketHandler(IPacketLayerHelper packetLayerHelper)
+        public TcpPacketHandler(IPacketLayerHelper packetLayerHelper, IPayloadProcessor payloadProcessor)
         {
             _packetLayerHelper = packetLayerHelper;
+            _payloadProcessor = payloadProcessor;
         }
 
         public bool CanHandlePacket(Packet packet)
@@ -32,6 +34,11 @@ namespace NetworkSniffer.Services.Handlers.PacketHandlers
                     $" | Flags: {tcpPacket.Flags}" +
                     $" | Window: {tcpPacket.WindowSize}" +
                     $" | Checksum: {tcpPacket.Checksum}");
+
+                if (tcpPacket.HasPayloadData && tcpPacket.PayloadData.Length > 0)
+                {
+                    _payloadProcessor.ProcessPayload(tcpPacket.PayloadData, logBuilder);
+                }
             }
         }
     }

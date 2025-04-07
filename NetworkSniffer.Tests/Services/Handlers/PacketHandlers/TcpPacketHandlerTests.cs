@@ -1,4 +1,5 @@
 ﻿using Moq;
+using NetworkSniffer.Interfaces;
 using NetworkSniffer.Services.Handlers.PacketHandlers;
 using NetworkSniffer.Utils;
 using PacketDotNet;
@@ -9,6 +10,7 @@ namespace NetworkSniffer.Tests.Services.Handlers.PacketHandlers
     public class TcpPacketHandlerTests
     {
         private readonly Mock<IPacketLayerHelper> _mockPacketLayerHelper;
+        private readonly Mock<IPayloadProcessor> _mockPayloadProcessor;
         private readonly TcpPacketHandler _handler;
         private readonly PhysicalAddress _senderMac;
         private readonly PhysicalAddress _targetMac;
@@ -16,7 +18,8 @@ namespace NetworkSniffer.Tests.Services.Handlers.PacketHandlers
         public TcpPacketHandlerTests()
         {
             _mockPacketLayerHelper = new Mock<IPacketLayerHelper>();
-            _handler = new TcpPacketHandler(_mockPacketLayerHelper.Object);
+            _mockPayloadProcessor = new Mock<IPayloadProcessor>();
+            _handler = new TcpPacketHandler(_mockPacketLayerHelper.Object, _mockPayloadProcessor.Object);
             _senderMac = new PhysicalAddress(new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 });
             _targetMac = new PhysicalAddress(new byte[] { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF });
         }
@@ -100,6 +103,37 @@ namespace NetworkSniffer.Tests.Services.Handlers.PacketHandlers
             // Assert
             var logOutput = logBuilder.Build();
             Assert.Empty(logOutput);
+        }
+
+        [Fact]
+        public void HandlePacket_ValidTcpPacketWithPayload_CallsPayloadProcessor()
+        {
+            // Arrange
+            var tcpPacket = new TcpPacket(1234, 80)
+            {
+                PayloadData = new byte[] { 0x01, 0x02, 0x03 }
+            };
+            var logBuilder = new PacketLogBuilder();
+
+            // Act
+            _handler.HandlePacket(tcpPacket, logBuilder);
+
+            // Assert
+            _mockPayloadProcessor.Verify(m => m.ProcessPayload(tcpPacket.PayloadData, logBuilder), Times.Once);
+        }
+
+        [Fact]
+        public void HandlePacket_ValidTcpPacketWithoutPayload_DoesNotCallPayloadProcessor()
+        {
+            // Arrange
+            var tcpPacket = new TcpPacket(1234, 80);
+            var logBuilder = new PacketLogBuilder();
+
+            // Act
+            _handler.HandlePacket(tcpPacket, logBuilder);
+
+            // Assert
+            _mockPayloadProcessor.Verify(m => m.ProcessPayload(It.IsAny<byte[]>(), It.IsAny<PacketLogBuilder>()), Times.Never);
         }
     }
 }
