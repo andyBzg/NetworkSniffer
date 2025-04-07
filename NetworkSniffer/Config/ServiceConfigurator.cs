@@ -3,6 +3,7 @@ using NetworkSniffer.Interfaces;
 using NetworkSniffer.Loggers;
 using NetworkSniffer.Services;
 using NetworkSniffer.Services.Handlers.PacketHandlers;
+using NetworkSniffer.Services.Handlers.PayloadHandlers;
 using NetworkSniffer.Utils;
 
 namespace NetworkSniffer.Config
@@ -26,6 +27,7 @@ namespace NetworkSniffer.Config
             services.AddSingleton<IPacketHandler, IcmpPacketHandler>();
 
             // Register payload handlers
+            services.AddSingleton<IPayloadHandler, HttpPayloadHandler>();
 
             // Register packet processor and payload processor
             services.AddSingleton<IPacketProcessor, PacketProcessor>();
