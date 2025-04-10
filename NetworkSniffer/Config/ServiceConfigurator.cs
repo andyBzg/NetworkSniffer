@@ -28,6 +28,7 @@ namespace NetworkSniffer.Config
 
             // Register payload handlers
             services.AddSingleton<IPayloadHandler, HttpPayloadHandler>();
+            services.AddSingleton<IPayloadHandler, RawPayloadHandler>();
 
             // Register packet processor and payload processor
             services.AddSingleton<IPacketProcessor, PacketProcessor>();
